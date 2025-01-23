@@ -21,6 +21,8 @@ API_KEY="Insert your API KEY here"
 
 5) Start the server with the following command:
 
-uvicorn app:app --poirt 5000 --reload
+uvicorn app:app --port 5000 --reload
+
+6) Check the swagger at the url : 127.0.0.1:5000/docs
 
 
