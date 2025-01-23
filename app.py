@@ -30,7 +30,7 @@ async def root():
 UPLOAD_DIRECTORY = Path("uploaded_videos")
 UPLOAD_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
-@app.post("/upload-video/")
+@app.post("/upload-files/")
 async def upload_video(files: List[UploadFile] = File(...)):
     uploaded_files_info = []
 
@@ -111,6 +111,32 @@ async def generate_content(files:FileNames,model:Model,prompt:str=None):
     except Exception as e:
         logging.exception(str(traceback.format_exc()))
         return JSONResponse(content={"message":f"There were issues while generating the response "},status_code=222)
+
+@app.post("/delete/all/")
+async def delete_all():
+    try:
+
+        docs=list(genai.list_files())
+        for i in docs:
+            genai.delete_file(i)
+        return JSONResponse(content={"message":f"All the files were successfully deleted"},status_code=200)
+    
+    except Exception as e:
+        return JSONResponse(content={"message":f"There were some issues while deleting the files"},status_code=223)
+    
+@app.get("/files/all")
+async def get_all():
+    try:
+
+        docs=list(genai.list_files())
+        return JSONResponse(content={"message":docs},status_code=200)
+    except Exception as e:
+        logging.exception(str(traceback.format_exc()))
+        return JSONResponse(content={"message":"There were some issues while retrieving the file names"},status_code=224)
+    
+
+    
+
 
 
 
