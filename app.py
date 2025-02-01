@@ -10,6 +10,10 @@ import time
 import traceback
 import logging
 from BaseModels import  *
+from apis import LeagueAPIS,ContentAnalyticsAPIS
+from Utils.Utils import Utils  
+from Utils.Constants import Constants
+import pandas as pd 
 
 load_dotenv() 
 
@@ -18,6 +22,25 @@ api_key=os.getenv("API_KEY")
 genai.configure(api_key=api_key)
 app = FastAPI()
 
+
+
+@app.on_event("startup")
+def load_interaction_data():
+    """Load the MLB Fan Content Interaction Data on startup."""
+    mlb_fan_content_interaction_file = 'https://storage.googleapis.com/gcp-mlb-hackathon-2025/datasets/mlb-fan-content-interaction-data/mlb-fan-content-interaction-data-000000000000.json'
+    mlb_fan_favorites_json_file = 'https://storage.googleapis.com/gcp-mlb-hackathon-2025/datasets/mlb-fan-content-interaction-data/2025-mlb-fan-favs-follows.json'
+    teams_endpoint_url = 'https://statsapi.mlb.com/api/v1/teams?sportId=1'
+    single_season_players_url = f'https://statsapi.mlb.com/api/v1/sports/1/players?season={time.strftime("%Y")}'
+
+    Constants.fan_content_interaction_df = Utils.load_newline_delimited_json(mlb_fan_content_interaction_file)
+    Constants.fan_favourites_df=Utils.load_newline_delimited_json(mlb_fan_favorites_json_file)
+    Constants.teams = Utils.process_endpoint_url(teams_endpoint_url,"teams")
+    print(Constants.teams.columns)
+    Constants.players = Utils.process_endpoint_url(single_season_players_url,"people")
+    print(Constants.players.columns)
+    
+app.include_router(LeagueAPIS.LeagueRouter)
+app.include_router(ContentAnalyticsAPIS.contentAPIRouter)
 
 @app.get("/")
 async def root():
@@ -134,7 +157,8 @@ async def get_all():
         logging.exception(str(traceback.format_exc()))
         return JSONResponse(content={"message":"There were some issues while retrieving the file names"},status_code=224)
     
-
+#ADD CORS and middleware
+                
     
 
 

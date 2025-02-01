@@ -1,0 +1,5 @@
+BASE_URL = "https://statsapi.mlb.com/api/v1"
+BASE_LOGO_URL = "https://www.mlbstatic.com/team-logos/"
+BASE_HEADSHOT_URL = "https://securea.mlb.com/mlb/images/players/head_shot"
+BASE_PLAYER_URL = "https://statsapi.mlb.com/api/v1/people/"
+BASE_SEASON_URL="https://statsapi.mlb.com/api/v1/seasons"
