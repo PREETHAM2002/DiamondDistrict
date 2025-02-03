@@ -218,3 +218,11 @@ def get_players_internal(season: int, accumulator: dict = None):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching players data: {str(e)}")
+
+
+
+def get_player_details(player_id: str,accumulator: dict = None):
+    """Fetch a specific player by ID."""
+    endpoint = f"{config.BASE_PLAYER_URL}/{player_id}"
+    data = Utils.fetch_data(endpoint)
+    return data

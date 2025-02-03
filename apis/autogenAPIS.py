@@ -17,7 +17,7 @@ async def agent(question:str,context:str):
     """Ask a question to the AI model."""
     accumulator={}
     agentSetup=Agents(user_proxy_args=PromptsConfig.userProxyArgs,assistant_proxy_args=PromptsConfig.assistantProxyArgs)
-    response=agentSetup.agentChat(tools=[get_team_logo_internal,get_player_headshot_internal,get_sports_internal,get_leagues_internal,get_seasons_internal,get_teams_internal],question=question,accumulator=accumulator)
+    response=agentSetup.agentChat(tools=[get_team_logo_internal,get_player_headshot_internal,get_sports_internal,get_leagues_internal,get_seasons_internal,get_teams_internal,get_players_internal],question=question,accumulator=accumulator)
     chatHistory=response.chat_history
     cost=response.cost
     chatHistory,response=chatUtils.extract_thought_process(chatHistory)

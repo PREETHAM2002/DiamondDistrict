@@ -4,3 +4,7 @@ pydantic
 python-dotenv 
 uvicorn
 python-multipart
+pyautogen==0.2.28
+autogenstudio==0.0.54
+autogen-agentchat[gemini]~=0.2
+pandas
