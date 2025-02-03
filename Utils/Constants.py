@@ -3,3 +3,5 @@ class Constants:
     fan_favourites_df=None
     teams=None
     players=None
+    
+    CONFIG_LIST=[{}]

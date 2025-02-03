@@ -10,10 +10,11 @@ import time
 import traceback
 import logging
 from BaseModels import  *
-from apis import LeagueAPIS,ContentAnalyticsAPIS
+from apis import LeagueAPIS,ContentAnalyticsAPIS,autogenAPIS
 from Utils.Utils import Utils  
 from Utils.Constants import Constants
 import pandas as pd 
+from ResponseModels import *
 
 load_dotenv() 
 
@@ -38,9 +39,12 @@ def load_interaction_data():
     print(Constants.teams.columns)
     Constants.players = Utils.process_endpoint_url(single_season_players_url,"people")
     print(Constants.players.columns)
+    Constants.CONFIG_LIST=eval(os.getenv("CONFIG_LIST"))
+    print(Constants.CONFIG_LIST)
     
 app.include_router(LeagueAPIS.LeagueRouter)
 app.include_router(ContentAnalyticsAPIS.contentAPIRouter)
+app.include_router(autogenAPIS.autogenapisrouter)
 
 @app.get("/")
 async def root():
@@ -109,7 +113,62 @@ async def delete_file(filename:str):
         logging.exception(str(traceback.format_exc()))
         return JSONResponse(content={"message":f"There were issues while deleting the file {filename}"},status_code=221)
     
+@app.post("/extract/clips/")
+async def extract_clips(files:FileNames,model:Model,prompt:str=None):
+    try:
+        files=files.model_dump()['files']
+        # Set the model to Gemini 1.5 Pro.
+        model=model.model_dump()['model_name']
+        contents=[]
+        if files:
+            for i in files:
+                contents.append(genai.get_file(i))
+        if prompt:
+            contents.append(prompt)
+        model = genai.GenerativeModel(model_name=f"models/{model}")
+        
+        # Make the LLM request.
+        print("Making LLM inference request...")
+        response = model.generate_content(contents,
+                                        request_options={"timeout": 600}, response_mime_type="application/json", response_schema=list[Highlights])
+        print(response.text)   
 
+        return JSONResponse(content={"message":f"{response.text}"},status_code=200)
+    except Exception as e:
+        logging.exception(str(traceback.format_exc()))
+        return JSONResponse(content={"message":f"There were issues while generating the response "},status_code=222)
+
+
+@app.post("/product/recommendations/")
+async def generate_advertisements(files:FileNames,model:Model,prompt:str=None,player_id:str=None,team_id:str=None):
+    try:
+        files=files.model_dump()['files']
+        # Set the model to Gemini 1.5 Pro.
+        model=model.model_dump()['model_name']
+        contents=[]
+        if player_id:
+            contents.append()
+        if files:
+            for i in files:
+                contents.append(genai.get_file(i))
+        if prompt:
+            contents.append(prompt)
+        model = genai.GenerativeModel(model_name=f"models/{model}")
+        
+        # Make the LLM request.
+        print("Making LLM inference request...")
+        response = model.generate_content(contents,
+                                        request_options={"timeout": 600}, response_mime_type="application/json", response_schema=list[Advertisements])
+        print(response.text)   
+
+        return JSONResponse(content={"message":f"{response.text}"},status_code=200)
+    except Exception as e:
+        logging.exception(str(traceback.format_exc()))
+        return JSONResponse(content={"message":f"There were issues while generating the response "},status_code=222)
+    
+    
+    
+    
 @app.post("/generate/")
 async def generate_content(files:FileNames,model:Model,prompt:str=None):
     try:
