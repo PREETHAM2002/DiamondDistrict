@@ -158,7 +158,7 @@ async def generate_advertisements(files:FileNames,model:Model,prompt:str=None,pl
         # Make the LLM request.
         print("Making LLM inference request...")
         response = model.generate_content(contents,
-                                        request_options={"timeout": 600}, response_mime_type="application/json", response_schema=list[Advertisements])
+                                        request_options={"timeout": 600},generation_config=genai.GenerationConfig(response_mime_type="application/json", response_schema=list[Advertisements]))
         print(response.text)   
 
         return JSONResponse(content={"message":f"{response.text}"},status_code=200)

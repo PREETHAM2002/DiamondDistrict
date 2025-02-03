@@ -1,11 +1,11 @@
 import typing_extensions as typing
-
+import datetime
 
 class Highlights(typing.TypedDict):
     title: str
-    timeInterval: list[str]
+    startTime: str
+    endTime: str
     description: str
-    thumbnail: str
     
     
 
